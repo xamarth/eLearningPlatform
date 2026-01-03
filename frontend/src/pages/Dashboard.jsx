@@ -11,7 +11,10 @@ export default function Dashboard() {
   useEffect(() => {
     api
       .get("/enrollments/me")
-      .then((res) => setEnrollments(res.data))
+      .then(res => setEnrollments(res.data))
+      .catch(err => {
+        console.error("Failed to load enrollments", err);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -35,31 +38,75 @@ export default function Dashboard() {
         </p>
       ) : (
         <div className="grid gap-4">
-          {enrollments.map((enroll) => (
-            <div
-              key={enroll._id}
-              className="border rounded p-4 flex justify-between items-center"
-            >
-              <div>
-                <h3 className="font-bold">
-                  {enroll.courseId.title}
-                </h3>
+          {enrollments.map(enroll => {
+            const lessons = enroll.courseId?.lessons || [];
+            const completedLessons = Object.values(
+              enroll.progress || {}
+            ).filter(Boolean).length;
 
-                <p className="text-sm text-gray-500">
-                  Progress:{" "}
-                  {Object.values(enroll.progress || {}).filter(Boolean).length} /{" "}
-                  {enroll.courseId.lessons?.length || 0} lessons
-                </p>
-              </div>
+            const total = lessons.length;
+            const percent =
+              total > 0
+                ? Math.round((completedLessons / total) * 100)
+                : 0;
 
-              <Link
-                to={`/courses/${enroll.courseId.slug}`}
-                className="underline"
+            const nextLesson =
+              lessons.find(l => !enroll.progress?.[l._id]) ||
+              lessons[0];
+
+            return (
+              <div
+                key={enroll._id}
+                className="border rounded p-4 space-y-3"
               >
-                Continue
-              </Link>
-            </div>
-          ))}
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="font-bold">
+                      {enroll.courseId?.title || "Course"}
+                    </h3>
+
+                    <p className="text-sm text-gray-500">
+                      {completedLessons} / {total} lessons completed
+                    </p>
+
+                    <div className="w-full bg-gray-200 h-2 rounded mt-2">
+                      <div
+                        className="bg-black h-2 rounded"
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">
+                      {percent}% completed
+                    </p>
+                  </div>
+
+                  {nextLesson && (
+                    <Link
+                      to={`/learn/${enroll._id}/${nextLesson._id}`}
+                      className="underline"
+                    >
+                      Continue
+                    </Link>
+                  )}
+                </div>
+
+                {lessons.length > 0 && (
+                  <ul className="space-y-1">
+                    {lessons.map(lesson => (
+                      <li key={lesson._id}>
+                        <Link
+                          to={`/learn/${enroll._id}/${lesson._id}`}
+                          className="text-sm underline"
+                        >
+                          {lesson.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

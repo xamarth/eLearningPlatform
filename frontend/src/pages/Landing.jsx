@@ -9,7 +9,6 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
       <header className="flex justify-between items-center p-6 border-b">
         <h1 className="text-xl font-bold">E-Learning</h1>
 
@@ -39,10 +38,14 @@ export default function Landing() {
               </button>
             </>
           )}
+          {user?.role === "admin" && (
+            <Link to="/admin" className="underline">
+              Admin
+            </Link>
+          )}
         </div>
       </header>
 
-      {/* Hero */}
       <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
         <h2 className="text-4xl font-bold mb-4">
           Learn Skills That Matter

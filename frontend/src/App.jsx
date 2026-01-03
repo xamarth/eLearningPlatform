@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router-dom"
 import { AuthProvider } from "@/auth/AuthProvider"
 import ProtectedRoute from "@/components/ProtectedRoute"
 
-import { CourseDetail, Courses, Dashboard, Landing, Lesson } from "@/pages"
+import { Admin, CourseDetail, Courses, Dashboard, Landing, Lesson } from "@/pages"
 
 export default function App() {
   return (
@@ -20,10 +20,18 @@ export default function App() {
           }
         />
         <Route
-          path="/lesson/:enrollmentId/:lessonId"
+          path="/learn/:enrollmentId/:lessonId"
           element={
             <ProtectedRoute>
               <Lesson />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <Admin />
             </ProtectedRoute>
           }
         />
