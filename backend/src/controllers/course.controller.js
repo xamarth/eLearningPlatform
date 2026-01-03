@@ -112,18 +112,17 @@ export const updateLesson = async (req, res) => {
 };
 
 export const deleteLesson = async (req, res) => {
-  const course = await Course.findById(req.params.courseId);
+  const { courseId, lessonId } = req.params;
+
+  const course = await Course.findById(courseId);
   if (!course) {
     return res.status(404).json({ message: "Course not found" });
   }
 
-  const lesson = course.lessons.id(req.params.lessonId);
-  if (!lesson) {
-    return res.status(404).json({ message: "Lesson not found" });
-  }
+  course.lessons = course.lessons.filter(
+    lesson => lesson._id.toString() !== lessonId
+  );
 
-  lesson.remove();
   await course.save();
-
   res.json(course);
 };
