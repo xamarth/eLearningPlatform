@@ -3,7 +3,7 @@ import Course from "../models/Course.js";
 
 /* Public: list courses */
 export const getCourses = async (req, res) => {
-  const courses = await Course.find().select("-lessons");
+  const courses = await Course.find();
   res.json(courses);
 };
 
