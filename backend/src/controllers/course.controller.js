@@ -89,3 +89,41 @@ export const addLessonToCourse = async (req, res) => {
 
   res.status(201).json(course);
 };
+
+export const updateLesson = async (req, res) => {
+  const { title, contentHtml, order } = req.body;
+
+  const course = await Course.findById(req.params.courseId);
+  if (!course) {
+    return res.status(404).json({ message: "Course not found" });
+  }
+
+  const lesson = course.lessons.id(req.params.lessonId);
+  if (!lesson) {
+    return res.status(404).json({ message: "Lesson not found" });
+  }
+
+  lesson.title = title;
+  lesson.contentHtml = contentHtml;
+  lesson.order = order;
+
+  await course.save();
+  res.json(course);
+};
+
+export const deleteLesson = async (req, res) => {
+  const course = await Course.findById(req.params.courseId);
+  if (!course) {
+    return res.status(404).json({ message: "Course not found" });
+  }
+
+  const lesson = course.lessons.id(req.params.lessonId);
+  if (!lesson) {
+    return res.status(404).json({ message: "Lesson not found" });
+  }
+
+  lesson.remove();
+  await course.save();
+
+  res.json(course);
+};

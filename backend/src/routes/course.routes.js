@@ -5,7 +5,9 @@ import {
   createCourse,
   updateCourse,
   deleteCourse,
-  addLessonToCourse
+  addLessonToCourse,
+  updateLesson,
+  deleteLesson
 } from "../controllers/course.controller.js";
 
 import { protect } from "../middleware/auth.middleware.js";
@@ -22,6 +24,8 @@ router.get("/:slug", getCourseBySlug);
 /* admin */
 router.post("/", protect, adminOnly, courseValidator, validate, createCourse);
 router.post("/:id/lessons", protect, adminOnly, addLessonToCourse);
+router.put("/:courseId/lessons/:lessonId", protect, adminOnly, updateLesson);
+router.delete("/:courseId/lessons/:lessonId", protect, adminOnly, deleteLesson);
 router.put("/:id", protect, adminOnly, courseValidator, validate, updateCourse);
 router.delete("/:id", protect, adminOnly, deleteCourse);
 
