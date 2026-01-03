@@ -68,3 +68,24 @@ export const deleteCourse = async (req, res) => {
   }
   res.json({ message: "Course deleted" });
 };
+
+export const addLessonToCourse = async (req, res) => {
+  const { id } = req.params;
+  const { title, contentHtml, order } = req.body;
+
+  const course = await Course.findById(id);
+
+  if (!course) {
+    return res.status(404).json({ message: "Course not found" });
+  }
+
+  course.lessons.push({
+    title,
+    contentHtml,
+    order
+  });
+
+  await course.save();
+
+  res.status(201).json(course);
+};
