@@ -22,7 +22,7 @@ export const enrollInCourse = async (req, res) => {
 export const getMyEnrollments = async (req, res) => {
   const enrollments = await Enrollment.find({
     userId: req.user._id
-  }).populate("courseId", "title slug thumbnailUrl");
+  }).populate("courseId");
 
   res.json(enrollments);
 };
