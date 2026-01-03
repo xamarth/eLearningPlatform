@@ -18,8 +18,8 @@ const courseSchema = new mongoose.Schema(
       type: String,
       enum: ["beginner", "intermediate", "advanced"]
     },
-    thumbnailUrl: { type: String },
-    lessons: [lessonSchema]
+    thumbnailUrl: { type: String, default: "" },
+    lessons: { type: [lessonSchema], default: [] },
   },
   { timestamps: true }
 );

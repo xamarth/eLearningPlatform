@@ -17,7 +17,23 @@ export const getCourseBySlug = async (req, res) => {
 
 /* Admin: create course */
 export const createCourse = async (req, res) => {
-  const course = await Course.create(req.body);
+  const {
+    title,
+    description,
+    category,
+    difficulty,
+    price
+  } = req.body;
+
+  const course = await Course.create({
+    title,
+    slug: title.toLowerCase().replace(/\s+/g, "-"),
+    description,
+    category,
+    difficulty,
+    price
+  });
+
   res.status(201).json(course);
 };
 
