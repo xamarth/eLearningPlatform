@@ -1,10 +1,27 @@
 import { body } from "express-validator";
 
 export const courseValidator = [
-  body("title").notEmpty(),
-  body("slug").notEmpty(),
-  body("description").notEmpty(),
+  body("title")
+    .trim()
+    .notEmpty()
+    .withMessage("Title is required"),
+
+  body("description")
+    .trim()
+    .notEmpty()
+    .withMessage("Description is required"),
+
+  body("category")
+    .trim()
+    .notEmpty()
+    .withMessage("Category is required"),
+
   body("difficulty")
-    .optional()
     .isIn(["beginner", "intermediate", "advanced"])
+    .withMessage("Invalid difficulty"),
+
+  body("price")
+    .optional()
+    .isNumeric()
+    .withMessage("Price must be a number"),
 ];
