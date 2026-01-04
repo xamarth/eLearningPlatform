@@ -1,7 +1,7 @@
 import Enrollment from "../models/Enrollment.js";
 import Course from "../models/Course.js";
 
-/* enroll user into a course */
+// enroll user into a course
 export const enrollInCourse = async (req, res) => {
   const { courseId } = req.body;
 
@@ -18,7 +18,7 @@ export const enrollInCourse = async (req, res) => {
   res.status(201).json(enrollment);
 };
 
-/* get logged in users enrollments */
+// get logged in users enrollments
 export const getMyEnrollments = async (req, res) => {
   const enrollments = await Enrollment.find({
     userId: req.user._id
@@ -27,7 +27,7 @@ export const getMyEnrollments = async (req, res) => {
   res.json(enrollments);
 };
 
-/* update lesson progress */
+// update lesson progress
 export const updateProgress = async (req, res) => {
   const { lessonId, completed } = req.body;
 
@@ -45,4 +45,23 @@ export const updateProgress = async (req, res) => {
   await enrollment.save();
 
   res.json(enrollment);
+};
+
+export const setLastLesson = async (req, res) => {
+  const { lessonId } = req.body;
+
+  const enrollment = await Enrollment.findById(req.params.id);
+
+  if (!enrollment) {
+    return res.status(404).json({ message: "Enrollment not found" });
+  }
+
+  if (!enrollment.userId.equals(req.user._id)) {
+    return res.status(403).json({ message: "Forbidden" });
+  }
+
+  enrollment.lastLessonId = lessonId;
+  await enrollment.save();
+
+  res.json({ success: true });
 };

@@ -16,6 +16,10 @@ const enrollmentSchema = new mongoose.Schema(
       type: Map,
       of: Boolean,
       default: {}
+    },
+    lastLessonId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: null
     }
   },
   { timestamps: true }
