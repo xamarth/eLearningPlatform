@@ -2,6 +2,7 @@ import express from "express";
 import {
   enrollInCourse,
   getMyEnrollments,
+  setLastLesson,
   updateProgress
 } from "../controllers/enrollment.controller.js";
 
