@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom"
+import { Navigate, Route, Routes } from "react-router-dom"
 import { AuthProvider } from "@/auth/AuthProvider"
 import ProtectedRoute from "@/components/ProtectedRoute"
 
@@ -16,6 +16,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/learn"
+          element={
+            <ProtectedRoute>
+              <Navigate to="/dashboard" replace />
             </ProtectedRoute>
           }
         />

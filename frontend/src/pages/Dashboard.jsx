@@ -40,29 +40,63 @@ export default function Dashboard() {
         <div className="grid gap-4">
           {enrollments.map(enroll => {
             const lessons = enroll.courseId?.lessons || [];
-            const completedLessons = Object.values(
-              enroll.progress || {}
-            ).filter(Boolean).length;
 
+            const progress =
+              typeof enroll.progress?.get === "function"
+                ? Object.fromEntries(enroll.progress)
+                : enroll.progress || {};
+
+            let resumeLesson = null;
+
+            if (enroll.lastLessonId) {
+              resumeLesson = lessons.find(
+                l => l._id === enroll.lastLessonId
+              );
+            }
+
+            if (!resumeLesson) {
+              resumeLesson = lessons.find(
+                l => !progress[l._id]
+              );
+            }
+
+            if (!resumeLesson && lessons.length > 0) {
+              resumeLesson = lessons[0];
+            }
+
+            const completedLessons = Object.values(progress).filter(Boolean).length;
             const total = lessons.length;
-            const percent =
-              total > 0
-                ? Math.round((completedLessons / total) * 100)
-                : 0;
+            const percent = total > 0
+              ? Math.round((completedLessons / total) * 100)
+              : 0;
 
-            const nextLesson =
-              lessons.find(l => !enroll.progress?.[l._id]) ||
-              lessons[0];
+            const isCourseCompleted =
+              lessons.length > 0 &&
+              completedLessons === lessons.length;
 
             return (
               <div
                 key={enroll._id}
                 className="border rounded p-4 space-y-3"
               >
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center gap-2">
                   <div>
                     <h3 className="font-bold">
-                      {enroll.courseId?.title || "Course"}
+                      <Link
+                        to={
+                          resumeLesson
+                            ? `/learn/${enroll._id}/${resumeLesson._id}`
+                            : "#"
+                        }
+                        className="underline"
+                      >
+                        {enroll.courseId?.title}
+                      </Link>
+                      {isCourseCompleted && (
+                        <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
+                          Completed
+                        </span>
+                      )}
                     </h3>
 
                     <p className="text-sm text-gray-500">
@@ -75,35 +109,17 @@ export default function Dashboard() {
                         style={{ width: `${percent}%` }}
                       />
                     </div>
-                    <p className="text-xs text-gray-600 mt-1">
-                      {percent}% completed
-                    </p>
                   </div>
 
-                  {nextLesson && (
+                  {resumeLesson && (
                     <Link
-                      to={`/learn/${enroll._id}/${nextLesson._id}`}
+                      to={`/learn/${enroll._id}/${resumeLesson._id}`}
                       className="underline"
                     >
                       Continue
                     </Link>
                   )}
                 </div>
-
-                {lessons.length > 0 && (
-                  <ul className="space-y-1">
-                    {lessons.map(lesson => (
-                      <li key={lesson._id}>
-                        <Link
-                          to={`/learn/${enroll._id}/${lesson._id}`}
-                          className="text-sm underline"
-                        >
-                          {lesson.title}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </div>
             );
           })}

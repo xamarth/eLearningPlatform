@@ -14,13 +14,15 @@ export default function Admin() {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    api.get("/courses")
-      .then(res => setCourses(res.data))
+    Promise.all([
+      api.get("/courses"),
+      api.get("/admin/stats")
+    ])
+      .then(([coursesRes, statsRes]) => {
+        setCourses(coursesRes.data);
+        setStats(statsRes.data);
+      })
       .finally(() => setLoading(false));
-
-    api.get("/admin/stats")
-      .then(res => setStats(res.data))
-      .catch(() => { });
   }, []);
 
   const handleCourseCreated = (course) => {
@@ -75,8 +77,12 @@ export default function Admin() {
 
           <ul className="space-y-1 text-sm">
             {stats.courseStats.map(c => (
-              <li key={c.title}>
-                {c.title}: {c.count}
+              <li
+                key={c.title}
+                className="flex justify-between border-b py-1"
+              >
+                <span>{c.title}</span>
+                <span className="font-semibold">{c.count}</span>
               </li>
             ))}
           </ul>
@@ -118,9 +124,27 @@ export default function Admin() {
                       key={lesson._id}
                       className="border p-2 rounded"
                     >
-                      <p className="text-sm">
-                        {lesson.order}. {lesson.title}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          value={lesson.order}
+                          className="w-14 border rounded px-1 text-sm"
+                          onChange={async (e) => {
+                            const res = await api.put(
+                              `/courses/${course._id}/lessons/${lesson._id}`,
+                              { order: Number(e.target.value) }
+                            );
+
+                            setCourses(prev =>
+                              prev.map(c =>
+                                c._id === res.data._id ? res.data : c
+                              )
+                            );
+                            setSelectedCourse(res.data);
+                          }}
+                        />
+                        <span className="text-sm">{lesson.title}</span>
+                      </div>
 
                       <div className="flex gap-3 text-sm">
                         <button
